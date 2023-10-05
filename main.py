@@ -10,7 +10,7 @@ app = FastAPI()
 # Configure CORS policy to allow requests from your React app's origin
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Replace with the actual origin of your React app
+    allow_origins=["http://localhost:3000","https://websiteconverter.netlify.app"],  # Replace with the actual origin of your React app
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],

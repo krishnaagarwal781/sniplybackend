@@ -25,6 +25,7 @@ class LinkRequest(BaseModel):
     url: str
     cta_message: str
     selected_component: str  # Add selected_component field
+    selected_alignment: str  # Add selected_component field
 
 class ShortenedLink(BaseModel):
     short_code: str
@@ -39,7 +40,8 @@ async def generate_link(link_request: LinkRequest):
         "short_code": short_code,
         "url": link_request.url,
         "cta_message": link_request.cta_message,
-        "selected_component": link_request.selected_component,  # Store selected component
+        "selected_component": link_request.selected_component,
+        "selected_alignment": link_request.selected_alignment,
     }
     links_collection.insert_one(link_data)
 
@@ -55,21 +57,38 @@ async def get_website_with_overlay(short_code: str):
 
     url = link_data["url"]
     selected_component = link_data.get("selected_component", "Component1")  # Default to Component1 if not found
+    selected_alignment = link_data.get("selected_alignment", "bottom left")  # Default to Component1 if not found
 
     # Define the image URL and style
-    image_url = "https://i.postimg.cc/d0KKBbQS/catax-logo.jpg"  # Replace with the actual URL of your image
-    image_style = "border-radius: 50%; border: 4px solid black; width: 100px; height: 100px; position: absolute; bottom: 10px; left: 10px;"
+    image_url1 = "https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-1_e0ejvn.png"
+    image_url2 = "https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601030/krisna/component-2_cwgff3.png"
+    image_url3 = "https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-3_vmhv6c.png"
+    image_url4 = "https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601028/krisna/component-4_l9wuux.png"
+    image_url5 = "https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-5_rgkqid.png"
+    image_url6 = "https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-6_trujdm.png"
 
     # Determine the component to render based on selected_component
+    if selected_alignment == "bottom left":
+        image_style = "width: 250px; position: absolute; bottom: 1%; left: 1%;"
+    elif selected_alignment == "bottom center":
+        image_style = "width: 250px; position: absolute; bottom: 1%; left: 40%;"
+    elif selected_alignment == "bottom right":
+        image_style = "width: 250px; position: absolute; bottom: 1%; right: 1%;"
+    
+
     component_to_render = None
     if selected_component == "Component1":
-        component_to_render = "<h2>Component 1 Content</h2>"
+        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-1_e0ejvn.png' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component2":
-        component_to_render = "<h2>Component 2 Content</h2>"
+        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601030/krisna/component-2_cwgff3.png' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component3":
-        component_to_render = "<h2>Component 3 Content</h2>"
+        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-3_vmhv6c.png' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component4":
-        component_to_render = "<h2>Component 4 Content</h2>"
+        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601028/krisna/component-4_l9wuux.png' style='{image_style}' alt='Overlay Image'></h2>"
+    elif selected_component == "Component5":
+        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-5_rgkqid.png' style='{image_style}' alt='Overlay Image'></h2>"
+    elif selected_component == "Component6":
+        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-6_trujdm.png'  style='{image_style}' alt='Overlay Image'></h2>"
 
     # Generate the HTML content with the embedded iframe and selected component
     html_content = f"""
@@ -80,7 +99,6 @@ async def get_website_with_overlay(short_code: str):
     </head>
     <body style="padding: 0; margin: 0;">
         <iframe src="{url}" width="100%" height="1000px" frameborder="0"></iframe>
-        <img src="{image_url}" style="{image_style}" alt="Overlay Image">
         {component_to_render}
     </body>
     </html>

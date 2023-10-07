@@ -17,9 +17,10 @@ app.add_middleware(
 )
 
 # MongoDB setup
-client = MongoClient("mongodb://musu:Musu17Hanu@ac-qekgspq-shard-00-00.hrsqgub.mongodb.net:27017,ac-qekgspq-shard-00-01.hrsqgub.mongodb.net:27017,ac-qekgspq-shard-00-02.hrsqgub.mongodb.net:27017/?replicaSet=atlas-gwgnya-shard-0&ssl=true&authSource=admin")
-db = client["cta_overlay_db"]
+client = MongoClient("mongodb+srv://sniply:3ev9XMrb8wuVhPx6@cataxprod.iwac6oj.mongodb.net/?retryWrites=true&w=majority")
+db = client["sniplydb "]
 links_collection = db["links"]
+analytics_collection = db["analytics"]
 
 class LinkRequest(BaseModel):
     url: str

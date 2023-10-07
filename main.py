@@ -20,7 +20,7 @@ app.add_middleware(
 client = MongoClient("mongodb://musu:Musu17Hanu@ac-qekgspq-shard-00-00.hrsqgub.mongodb.net:27017,ac-qekgspq-shard-00-01.hrsqgub.mongodb.net:27017,ac-qekgspq-shard-00-02.hrsqgub.mongodb.net:27017/?replicaSet=atlas-gwgnya-shard-0&ssl=true&authSource=admin")
 db = client["cta_overlay_db"]
 links_collection = db["links"]
-#latest
+#latest aur latest
 class LinkRequest(BaseModel):
     url: str
     cta_message: str

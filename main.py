@@ -47,8 +47,11 @@ async def generate_link(link_request: LinkRequest):
 
     return {"short_code": short_code}
 
-@app.get("/{short_code}", response_class=HTMLResponse)
-async def get_website_with_overlay(short_code: str):
+@app.get("/{domain_path}/{short_code}", response_class=HTMLResponse)
+async def get_website_with_overlay(domain_path: str, short_code: str):
+    # Decode the domain path from the URL
+    domain_path = domain_path.replace("_", "/")  # Convert underscores back to slashes
+
     # Retrieve the original URL, overlay message, and selected component based on the short code from MongoDB
     link_data = links_collection.find_one({"short_code": short_code})
 
@@ -74,21 +77,20 @@ async def get_website_with_overlay(short_code: str):
         image_style = "width: 250px; position: absolute; bottom: 1%; left: 40%;"
     elif selected_alignment == "bottom right":
         image_style = "width: 250px; position: absolute; bottom: 1%; right: 1%;"
-    
 
     component_to_render = None
     if selected_component == "Component1":
-        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-1_e0ejvn.png' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<h2><img src='{image_url1}' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component2":
-        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601030/krisna/component-2_cwgff3.png' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<h2><img src='{image_url2}' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component3":
-        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-3_vmhv6c.png' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<h2><img src='{image_url3}' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component4":
-        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601028/krisna/component-4_l9wuux.png' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<h2><img src='{image_url4}' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component5":
-        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-5_rgkqid.png' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<h2><img src='{image_url5}' style='{image_style}' alt='Overlay Image'></h2>"
     elif selected_component == "Component6":
-        component_to_render = f"<h2><img src='https://res.cloudinary.com/dxtzjwkhk/image/upload/v1696601029/krisna/component-6_trujdm.png'  style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<h2><img src='{image_url6}' style='{image_style}' alt='Overlay Image'></h2>"
 
     # Generate the HTML content with the embedded iframe and selected component
     html_content = f"""
@@ -98,10 +100,11 @@ async def get_website_with_overlay(short_code: str):
         <title>Generated Website with Overlay</title>
     </head>
     <body style="padding: 0; margin: 0;">
-        <iframe src="{url}" width="100%" height="1000px" frameborder="0"></iframe>
+        <iframe src="{url}" width="100%" height="900px" frameborder="0"></iframe>
         {component_to_render}
     </body>
     </html>
     """
 
     return HTMLResponse(content=html_content)
+

@@ -80,17 +80,17 @@ async def get_website_with_overlay(domain_path: str, short_code: str):
 
     component_to_render = None
     if selected_component == "Component1":
-        component_to_render = f"<h2><img src='{image_url1}' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<img src='{image_url1}' style='{image_style}' alt='Overlay Image'>"
     elif selected_component == "Component2":
-        component_to_render = f"<h2><img src='{image_url2}' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<img src='{image_url2}' style='{image_style}' alt='Overlay Image'>"
     elif selected_component == "Component3":
-        component_to_render = f"<h2><img src='{image_url3}' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<img src='{image_url3}' style='{image_style}' alt='Overlay Image'>"
     elif selected_component == "Component4":
-        component_to_render = f"<h2><img src='{image_url4}' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<img src='{image_url4}' style='{image_style}' alt='Overlay Image'>"
     elif selected_component == "Component5":
-        component_to_render = f"<h2><img src='{image_url5}' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<img src='{image_url5}' style='{image_style}' alt='Overlay Image'>"
     elif selected_component == "Component6":
-        component_to_render = f"<h2><img src='{image_url6}' style='{image_style}' alt='Overlay Image'></h2>"
+        component_to_render = f"<img src='{image_url6}' style='{image_style}' alt='Overlay Image'>"
 
     # Generate the HTML content with the embedded iframe and selected component
     html_content = f"""

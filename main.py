@@ -26,6 +26,7 @@ class LinkRequest(BaseModel):
     cta_message: str
     selected_component: str  # Add selected_component field
     selected_alignment: str  # Add selected_component field
+    visit_count: int = 0
 
 class ShortenedLink(BaseModel):
     short_code: str
@@ -42,10 +43,31 @@ async def generate_link(link_request: LinkRequest):
         "cta_message": link_request.cta_message,
         "selected_component": link_request.selected_component,
         "selected_alignment": link_request.selected_alignment,
+        "visit_count":0,
     }
     links_collection.insert_one(link_data)
 
     return {"short_code": short_code}
+
+@app.get("/track-visit/{short_code}")
+async def track_visit(short_code: str):
+    # Find the link data in MongoDB based on the short code
+    link_data = links_collection.find_one({"short_code": short_code})
+
+    if not link_data:
+        raise HTTPException(status_code=404, detail="Shortened link not found")
+
+    # Increment the visit count and update the link data in the database
+    updated_visit_count = link_data.get("visit_count", 0) + 1
+    links_collection.update_one({"short_code": short_code}, {"$set": {"visit_count": updated_visit_count}})
+
+    # Log the visit and the updated visit count
+    print(f"Visited {short_code}. Visit count: {updated_visit_count}")
+
+    # Redirect the user to the original URL
+    return RedirectResponse(url=link_data["url"])
+
+
 
 @app.get("/{domain_path}/{short_code}", response_class=HTMLResponse)
 async def get_website_with_overlay(domain_path: str, short_code: str):

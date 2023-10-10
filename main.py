@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel
 from pymongo import MongoClient
 import shortuuid
+from fastapi import Request
+
 
 app = FastAPI()
 
@@ -50,7 +52,7 @@ async def generate_link(link_request: LinkRequest):
     return {"short_code": short_code}
 
 @app.get("/track-visit/{short_code}")
-async def track_visit(short_code: str):
+async def track_visit(short_code: str, request: Request):
     # Find the link data in MongoDB based on the short code
     link_data = links_collection.find_one({"short_code": short_code})
 
@@ -59,10 +61,19 @@ async def track_visit(short_code: str):
 
     # Increment the visit count and update the link data in the database
     updated_visit_count = link_data.get("visit_count", 0) + 1
-    links_collection.update_one({"short_code": short_code}, {"$set": {"visit_count": updated_visit_count}})
 
-    # Log the visit and the updated visit count
-    print(f"Visited {short_code}. Visit count: {updated_visit_count}")
+    # Get the user's IP address from the request
+    user_ip = request.client.host
+
+    # Store the IP address along with other tracking data
+    link_data["visit_count"] = updated_visit_count
+    link_data["user_ip"] = user_ip
+
+    # Update the link data in MongoDB
+    links_collection.update_one({"short_code": short_code}, {"$set": link_data})
+
+    # Log the visit, the user's IP address, and the updated visit count
+    print(f"Visited {short_code}. User IP: {user_ip}. Visit count: {updated_visit_count}")
 
     # Redirect the user to the original URL
     return RedirectResponse(url=link_data["url"])
@@ -129,4 +140,34 @@ async def get_website_with_overlay(domain_path: str, short_code: str):
     """
 
     return HTMLResponse(content=html_content)
+
+
+
+@app.get("/track-visit/{short_code}")
+async def track_visit(short_code: str, request: Request):
+    # Find the link data in MongoDB based on the short code
+    link_data = links_collection.find_one({"short_code": short_code})
+
+    if not link_data:
+        raise HTTPException(status_code=404, detail="Shortened link not found")
+
+    # Increment the visit count and update the link data in the database
+    updated_visit_count = link_data.get("visit_count", 0) + 1
+
+    # Get the user's IP address from the request
+    user_ip = request.client.host
+
+    # Store the IP address along with other tracking data
+    link_data["visit_count"] = updated_visit_count
+    link_data["user_ip"] = user_ip
+
+    # Update the link data in MongoDB
+    links_collection.update_one({"short_code": short_code}, {"$set": link_data})
+
+    # Log the visit, the user's IP address, and the updated visit count
+    print(f"Visited {short_code}. User IP: {user_ip}. Visit count: {updated_visit_count}")
+
+    # Redirect the user to the original URL
+    return RedirectResponse(url=link_data["url"])
+
 
